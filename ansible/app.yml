@@ -1,0 +1,40 @@
+---
+- hosts: frontend
+  become: yes
+  tasks:
+    - name: Set up permissions for {{ nginx_magento_server_doc_root }}/var
+      file:
+        path: "{{ nginx_magento_server_doc_root }}/var"
+        mode: 0777
+        state: directory
+        recurse: yes
+    - name: Set up permissions for {{ nginx_magento_server_doc_root }}/media
+      file:
+        path: "{{ nginx_magento_server_doc_root }}/media"
+        mode: 0777
+        state: directory
+        recurse: yes
+    - name: Set up permissions for {{ nginx_magento_server_doc_root }}/app/etc
+      file:
+        path: "{{ nginx_magento_server_doc_root }}/app/etc"
+        mode: 0775
+        state: directory
+        recurse: yes
+    - name: Generate local.xml
+      template:
+        src: templates/local.j2
+        dest: "/tmp/local.xml"
+        mode: 0775
+    - name: Move local.xml from /tmp into "{{ nginx_magento_server_doc_root }}/app/etc/"
+      command: mv /tmp/local.xml {{ nginx_magento_server_doc_root }}/app/etc/local.xml
+    - name: Enable Magento cron
+      cron: name="magento cron" minute="*/1" job="{{ nginx_magento_server_doc_root }}/cron.sh" user="{{ ansible_user }}"
+      when: magento_enable_cron == true
+    - name: Clean helpfull /tmp folder :-)
+      file: path="/tmp/{{ item }}" state=absent
+      with_items:
+        - "*.sql"
+        - "*.tar.gz"
+        - "composer-installer.php"
+        - "xdebug-2.3.3/"
+        - "xdebug-2.3.3.tgz"

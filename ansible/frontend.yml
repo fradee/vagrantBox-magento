@@ -1,0 +1,21 @@
+---
+- hosts: frontend
+  become: yes
+  pre_tasks:
+        - name: On or Off display errors
+          set_fact:
+            nginx_sendfile: "off"
+          when: developer_mode == true
+  roles:
+    - fradee.general
+    - geerlingguy.nginx
+  tasks:
+    - name: "Add conf file of {{ nginx_magento_server_name_helper }} into /etc/nginx/sites-available/"
+      template:
+        src: templates/vhost_nginx_magento.j2
+        dest: "/etc/nginx/sites-available/{{ nginx_magento_server_name_helper }}.conf"
+        mode: 0644
+    - name: "Enable {{ nginx_magento_server_name_helper }}.conf in Nginx Server"
+      file: state=link src="/etc/nginx/sites-available/{{ nginx_magento_server_name_helper }}.conf" path="{{ nginx_vhost_path }}/{{ nginx_magento_server_name_helper }}.conf"
+      notify:
+         - reload nginx

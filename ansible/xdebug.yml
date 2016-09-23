@@ -1,0 +1,6 @@
+---
+- hosts: backend
+  become: yes
+  roles:
+    - fradee.general
+    - geerlingguy.php-xdebug

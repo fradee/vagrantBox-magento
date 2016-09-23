@@ -1,0 +1,300 @@
+---
+developer_mode: true
+percona_version: "5.6"
+php_version: "5.6"
+magento_enable_cron: true
+##use_dump_from_stor: true
+##use_dump_from_extras: false
+
+
+#### nginx vhost magento Start
+nginx_magento_auth_basic: false
+nginx_magento_server_port: "80"
+nginx_magento_server_name_helper: "devops.local"
+nginx_magento_server_name: "devops.local"
+nginx_magento_server_doc_root: "/vagrant/source"
+nginx_magento_server_php_fpm: "unix:/var/run/php{{ php_version }}-fpm.sock"
+nginx_magento_fastcgi_read_timeout: "9000"
+#nginx_magento_server_php_fpm: "127.0.0.1:9000"
+nginx_magento_MAGE_RUN_CODE: "''"
+nginx_magento_MAGE_RUN_TYPE: "store"
+#### nginx vhost magento End
+
+#### magento local.xml Start
+# Variables for local.xml
+magento_save_cache_in_redis: true
+magento_redis_address: "127.0.0.1"
+magento_redis_port: "6379"
+magento_redis_db_cache: "0"
+magento_redis_db_session: "1"
+magento_redis_compression_lib: "gzip" # "lzf" , "snappy"
+magento_save_session_in_redis: true
+magento_session_save: "<![CDATA[db]]>" # "<![CDATA[db]]>", "<![CDATA[memcache]]>" , "<![CDATA[files]]>"
+#magento_session_save_memcached: "<session_save_path><![CDATA[tcp://{{ memcached_listen_ip }}:{{ memcached_port }}?persistent=1&weight=2&timeout=10&retry_interval=10]]></session_save_path>"
+magento_crypt_key: "123123123456789"
+#### magento local.xml End
+
+#### Xobb.percona Start
+# Define root password for percona server
+root_password: "Passw0rd"
+
+# Define is a database must be created
+create_app_db: true
+db_name: magentodb
+db_collation: utf8_general_ci
+db_user: magento
+db_user_password: magento
+db_host: "127.0.0.1"
+db_dump_file: "../extras/magentoschool.sql"
+
+generate_custom_mycnf: false
+# Some defaults variables for percona server custom my.cnf config file
+port: 3306
+bind_address: 0.0.0.0
+max_allowed_packet: 16M
+key_buffer: 16M
+thread_stack: 192K
+thread_cache_size: 8
+# Uncomment following vars if you want to log queries
+sqldebug: true # for enable in custom setings file slow log queries
+slow_query_log: 1 # percona 5.6 & percona 5.7
+slow_query_log_file: /var/log/mysql/mysql-slow.log # percona 5.6 & percona 5.7
+log_slow_queries: /var/log/mysql/mysql-slow.log # only percona 5.5
+long_query_time: 2
+log_queries_not_using_indexes: 1
+#### Xobb.percona End
+
+#### fradee.magentotools Start
+magentotools_install_magerun: true  # Install Magento Magerun
+magentotools_install_modman: true   #Install Magento Modman
+magentotools_install_composer: true   #Install Composer
+magentotools_install_ioncube: true   #Install IonCube
+magentotools_install_ioncube_php7: false # Set up ioncube for php5
+magentotools_install_ioncube_php5: true # Set up ioncube for php7
+magentotools_install_ioncube_php_version: "{{ php_version }}"
+#### fradee.magentotools End
+
+#### fradee.general Start
+# set timezone fradee.general
+fradee_timezone: "Europe/Kiev"
+#set packgaes fradee.general
+fradee_packages:
+   - curl
+   - acl
+   - git
+   - mc
+   - htop
+   - gzip
+   - lynx
+#set specsfic repos if need
+fradee_repos:
+   - ppa:ondrej/php
+   - ppa:chris-lea/redis-server
+#### fradee.general End
+
+#### geerlingguy.php Start
+# Used only for Debian/Ubuntu installation, as the -t option for apt.
+nginx_default_release: ""
+
+# Use the official Nginx PPA for Ubuntu, and the version to use if so.
+nginx_ppa_use: false
+nginx_ppa_version: stable
+
+# The name of the nginx apt/yum package to install.
+nginx_package_name: "nginx"
+
+nginx_worker_processes: "1"
+nginx_worker_connections: "1024"
+nginx_multi_accept: "off"
+
+nginx_error_log: "/var/log/nginx/error.log warn"
+nginx_access_log: "/var/log/nginx/access.log main buffer=16k"
+
+nginx_sendfile: "on"
+nginx_tcp_nopush: "on"
+nginx_tcp_nodelay: "on"
+
+nginx_keepalive_timeout: "65"
+nginx_keepalive_requests: "100"
+
+nginx_client_max_body_size: "64m"
+
+nginx_server_names_hash_bucket_size: "64"
+
+nginx_proxy_cache_path: ""
+
+nginx_extra_conf_options: ""
+# Example extra main options, used within the main nginx's context:
+#   nginx_extra_conf_options: |
+#     env VARIABLE;
+#     include /etc/nginx/main.d/*.conf;
+
+nginx_extra_http_options: ""
+# Example extra http options, printed inside the main server http config:
+#    nginx_extra_http_options: |
+#      proxy_buffering    off;
+#      proxy_set_header   X-Real-IP $remote_addr;
+#      proxy_set_header   X-Scheme $scheme;
+#      proxy_set_header   X-Forwarded-For $proxy_add_x_forwarded_for;
+#      proxy_set_header   Host $http_host;
+
+nginx_remove_default_vhost: true
+nginx_vhosts_filename: "vhosts.conf"
+nginx_vhosts: []
+# Example vhost below, showing all available options:
+# - listen: "80 default_server" # default: "80 default_server"
+#   server_name: "example.com" # default: N/A
+#   root: "/var/www/example.com" # default: N/A
+#   index: "index.html index.htm" # default: "index.html index.htm"
+#
+#   # Properties that are only added if defined:
+#   error_page: ""
+#   access_log: ""
+#   error_log: ""
+#   extra_parameters: "" # Can be used to add extra config blocks (multiline).
+
+nginx_upstreams: []
+# - name: myapp1
+#   strategy: "ip_hash" # "least_conn", etc.
+#   servers: {
+#     "srv1.example.com",
+#     "srv2.example.com weight=3",
+#     "srv3.example.com"
+#   }
+
+#### geerlingguy.php End
+
+#### geerlingguy.php Start
+php_webserver_daemon: "nginx"
+php_enable_php_fpm: true
+#php_fpm_listen: "127.0.0.1:9000"
+php_fpm_listen: "/var/run/php{{ php_version }}-fpm.sock"
+
+php_packages:
+  - "php{{ php_version }}"
+  - "php{{ php_version }}-dev"
+  - "php{{ php_version }}-fpm"
+  - "php{{ php_version }}-cli"
+  - libpcre3-dev
+  - "php{{ php_version }}-gd"
+  - "php{{ php_version }}-curl"
+  - "php{{ php_version }}-imap"
+  - "php{{ php_version }}-json"
+  - "php{{ php_version }}-opcache"
+  - "php{{ php_version }}-xml"
+  - "php{{ php_version }}-mbstring"
+  - "php{{ php_version }}-sqlite3"
+  - "php{{ php_version }}-mcrypt"
+  - "php{{ php_version }}-mysql"
+  - "php{{ php_version }}-redis"
+  - "php-apcu"
+
+# Vendor-specific configuration paths on Debian/Ubuntu make my brain asplode.
+php_conf_paths:
+  - "/etc/php/{{ php_version }}/fpm"
+  - "/etc/php/{{ php_version }}/apache2"
+  - "/etc/php/{{ php_version }}/cli"
+
+php_extension_conf_paths:
+  - "/etc/php/{{ php_version }}/fpm/conf.d"
+  - "/etc/php/{{ php_version }}/apache2/conf.d"
+  - "/etc/php/{{ php_version }}/cli/conf.d"
+
+php_apc_conf_filename: 20-apcu.ini
+php_opcache_conf_filename: 05-opcache.ini
+php_fpm_daemon: "php{{ php_version }}-fpm"
+php_fpm_conf_path: "/etc/php/{{ php_version }}/fpm"
+php_fpm_pool_conf_path: "{{ php_fpm_conf_path }}/pool.d/www.conf"
+
+php_fpm_pool_user: "www-data"
+php_fpm_pool_group: "www-data"
+
+
+# PHP package state; use 'installed' to make sure it's installed, or 'latest' if
+# you want to upgrade or switch versions using a new repo.
+php_packages_state: latest
+
+# Set this to false if you're not using PHP with Apache/Nginx/etc.
+php_enable_webserver: true
+
+# PHP-FPM configuration.
+php_fpm_listen_allowed_clients: "127.0.0.1"
+php_fpm_pm_max_children: 50
+php_fpm_pm_start_servers: 5
+php_fpm_pm_min_spare_servers: 5
+php_fpm_pm_max_spare_servers: 5
+
+# The executable to run when calling PHP from the command line.
+php_executable: "php"
+
+# OpCache settings (useful for PHP >=5.5).
+php_opcache_enable: "1"
+php_opcache_enable_cli: "1"
+php_opcache_memory_consumption: "96"
+php_opcache_interned_strings_buffer: "16"
+php_opcache_max_accelerated_files: "4096"
+php_opcache_max_wasted_percentage: "5"
+php_opcache_validate_timestamps: "1"
+php_opcache_revalidate_path: "0"
+php_opcache_revalidate_freq: "2"
+php_opcache_max_file_size: "0"
+php_opcache_blacklist_filename: ""
+
+# APCu settings.
+php_enable_apc: true
+php_apc_shm_size: "96M"
+php_apc_enable_cli: "0"
+
+# If this is set to false, none of the following options will have any effect.
+# Any and all changes to /etc/php.ini will be your responsibility.
+php_use_managed_ini: true
+
+php_expose_php: "On"
+php_memory_limit: "512M"
+php_max_execution_time: "600"
+php_max_input_time: "600"
+php_max_input_vars: "1000"
+php_realpath_cache_size: "32K"
+php_upload_max_filesize: "64M"
+php_post_max_size: "32M"
+php_date_timezone: "{{ fradee_timezone }}"
+php_allow_url_fopen: "On"
+
+php_sendmail_path: "/usr/sbin/sendmail -t -i"
+php_output_buffering: "4096"
+php_short_open_tag: false
+
+php_session_cookie_lifetime: 0
+php_session_gc_probability: 1
+php_session_gc_divisor: 1000
+php_session_gc_maxlifetime: 1440
+php_session_save_handler: files
+php_session_save_path: ''
+
+php_error_reporting: "E_ALL & ~E_DEPRECATED & ~E_STRICT"
+php_display_errors: "Off"
+php_display_startup_errors: "Off"
+#### geerlingguy.php End
+
+
+
+#### geerlingguy.php-xdebug Start
+# Varaibles for set up geerlingguy.php-xdebug
+workspace: /tmp
+php_xdebug_version: 2.3.3
+php_xdebug_coverage_enable: 1
+php_xdebug_default_enable: 1
+php_xdebug_cli_enable: 0
+php_xdebug_remote_enable: "true"
+php_xdebug_remote_connect_back: "true"
+php_xdebug_remote_log: /tmp/xdebug.log
+php_xdebug_remote_autostart: "false"
+php_xdebug_idekey: PHPSTORM
+php_xdebug_max_nesting_level: 256
+#### geerlingguy.php-xdebug End
+
+#### fradee.mailcatcher Start
+mailcatcher_php_version: "{{ php_version }}"
+mailcatcher_startup_on_boot: true
+#### fradee.mailcatcher End
+

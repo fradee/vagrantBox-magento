@@ -1,0 +1,8 @@
+---
+- hosts: backend
+  become: yes
+#  pre_tasks:
+#      - name: Install Redis server
+#        action: apt pkg=redis-server state=latest
+  roles:
+    - ansible-mailcatcher

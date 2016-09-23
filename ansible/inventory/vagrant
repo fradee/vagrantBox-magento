@@ -1,0 +1,13 @@
+[frontend]
+devops.local  ansible_user=ubuntu   ansible_port=22
+
+[database]
+devops.local  ansible_user=ubuntu   ansible_port=22
+
+[backend]
+devops.local  ansible_user=ubuntu   ansible_port=22
+
+[vagrant:children]
+database
+frontend
+backend

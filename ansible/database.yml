@@ -1,0 +1,18 @@
+---
+- hosts: database
+  become: yes
+  #pre_tasks:
+  #    - name: Download dump db from {{ storage_server }}
+  #      get_url: url="http://{{ storage_server }}/{{ stor_path }}{{ stor_db_dump_file }}.tar.gz" dest="{{ pandora_destination }}/{{ stor_db_dump_file }}.tar.gz" url_username={{ stor_user }} url_password={{ stor_password }} mode=0777
+  #      when: use_dump_from_stor == true and use_dump_from_extras == false
+  #    - name: Unarchive db dump
+  #      unarchive: src="{{ pandora_destination }}/{{ stor_db_dump_file }}.tar.gz" dest="{{ pandora_destination }}" copy=no list_files=yes owner={{ ansible_user }} group={{ ansible_user }}
+  #      when: use_dump_from_stor == true and use_dump_from_extras == false
+  #    - name: Set fact where is dump
+  #      set_fact: db_dump_file="{{ pandora_destination }}/{{ stor_db_dump_file }}"
+  #      when: use_dump_from_stor == true and use_dump_from_extras == false
+
+  roles:
+    - fradee.general
+    - Xobb.percona
+ #   - ansible-percona

@@ -1,0 +1,13 @@
+[frontend]
+dev.local  ansible_user=user   ansible_port=22
+
+[database]
+dev.local  ansible_user=user   ansible_port=22
+
+[backend]
+dev.local  ansible_user=user   ansible_port=22
+
+[staging:children]
+database
+frontend
+backend

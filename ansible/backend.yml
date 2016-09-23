@@ -1,0 +1,28 @@
+---
+- hosts: backend
+  become: yes
+  pre_tasks:
+      - name: On or Off display errors
+        set_fact:
+          php_display_errors: "On"
+        when: developer_mode == true
+      - name: On or Off display startUp errors
+        set_fact:
+          php_display_startup_errors: "On"
+        when: developer_mode == true
+  #    - name: Add Redis repository
+  #      apt_repository: repo=ppa:chris-lea/redis-server update_cache=yes
+  #    - name: Update apt cache for install Redis-server
+  #      apt: update_cache=yes
+  #    - name: Install Redis server
+  #      action: apt pkg=redis-server state=latest
+  roles:
+     - geerlingguy.php
+  #  - geerlingguy.redis
+  tasks:
+    - name: "enable php{{ php_version }}-cli"
+      file: state=link src="/usr/bin/php{{ php_version }}" path="/etc/alternatives/php"
+    - name: "enable php{{ php_version }} mcrypt module"
+      action: command phpenmod -v {{ php_version }} mcrypt
+      notify:
+      - restart php-fpm

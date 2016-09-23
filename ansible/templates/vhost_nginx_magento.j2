@@ -1,0 +1,82 @@
+	server {
+        listen {{ nginx_magento_server_port }};
+        server_name {{ nginx_magento_server_name }};
+        root {{ nginx_magento_server_doc_root }};
+        keepalive_timeout 75s;
+
+        {% if nginx_magento_auth_basic %}
+        auth_basic "Restricted";
+        auth_basic_user_file /etc/nginx/.htpasswd;
+        {% endif %}
+
+        location / {
+            index index.html index.php; ## Allow a static html file to be shown first
+            try_files $uri $uri/ @handler; ## If missing pass the URI to Magento's front handler
+            expires 30d; ## Assume all files are cachable
+        }
+
+        ## These locations would be hidden by .htaccess normally
+        location ^~ /app/                { deny all; }
+        location ^~ /includes/           { deny all; }
+        location ^~ /lib/                { deny all; }
+        location ^~ /media/downloadable/ { deny all; }
+        location ^~ /pkginfo/            { deny all; }
+        location ^~ /report/config.xml   { deny all; }
+        location ^~ /var/                { deny all; }
+        location ~ ^/(skin|js|css)/ {
+                try_files $uri $uri/ =404;
+                expires 30d;
+            }
+        location = /favicon.ico {
+            log_not_found off;
+        	access_log off;
+        }
+        location = /robots.txt {
+            allow all;
+        	log_not_found off;
+        	access_log off;
+        }
+        ## Disable viewing .htaccess & .htpassword
+        location ~ /\.ht { deny all; }
+
+        location /var/export/ { ## Allow admins only to view export folder
+            auth_basic           "Restricted"; ## Message shown in login window
+            auth_basic_user_file htpasswd; ## See /etc/nginx/htpassword
+            autoindex            on;
+        }
+
+        location  /. { ## Disable .htaccess and other hidden files
+            return 404;
+        }
+
+        location @handler { ## Magento uses a common front handler
+            rewrite / /index.php;
+        }
+
+        location ~ .php/ { ## Forward paths like /js/index.php/x.js to relevant handler
+            rewrite ^(.*.php)/ $1 last;
+        }
+    ####################### output compression saves bandwidth #######################
+    gzip  on;
+    gzip_http_version 1.1;
+    gzip_vary on;
+    gzip_comp_level 9;
+    gzip_proxied any;
+    gzip_types text/plain text/html text/css application/json application/javascript application/x-javascript text/javascript text/xml application/xml application/rss+xml application/atom+xml application/rdf+xml;
+    gzip_buffers 16 8k;
+
+    # Disable gzip for certain browsers.
+    gzip_disable "MSIE [1-6].(?!.*SV1)";
+
+    location ~ .php$ { ## Execute PHP scripts
+            if (!-e $request_filename) { rewrite / /index.php last; } ## Catch 404s that try_files miss
+            expires        off; ## Do not cache dynamic content
+            fastcgi_pass   {{ nginx_magento_server_php_fpm }};
+            fastcgi_param  HTTPS off;
+            fastcgi_param  SCRIPT_FILENAME  $document_root$fastcgi_script_name;
+            fastcgi_param  MAGE_RUN_CODE {{ nginx_magento_MAGE_RUN_CODE }};
+            fastcgi_param  MAGE_RUN_TYPE {{ nginx_magento_MAGE_RUN_TYPE }};
+            fastcgi_read_timeout {{ nginx_magento_fastcgi_read_timeout }};
+            include        fastcgi_params; ## See /etc/nginx/fastcgi_params
+        }
+}

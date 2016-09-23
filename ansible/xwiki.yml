@@ -1,0 +1,8 @@
+---
+- hosts: xwiki
+  become: yes
+  roles:
+    - geerlingguy.java
+    - geerlingguy.nginx
+    - ansible-percona
+    - xwiki
