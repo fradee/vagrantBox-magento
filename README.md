@@ -1,0 +1,1 @@
+# vagrantBox-magento
