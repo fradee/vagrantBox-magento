@@ -15,4 +15,3 @@
   roles:
     - fradee.general
     - Xobb.percona
- #   - ansible-percona

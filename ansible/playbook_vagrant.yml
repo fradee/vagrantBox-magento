@@ -1,5 +1,4 @@
 ---
-#- include: devops_test.yml
 - include: database.yml
 - include: frontend.yml
 - include: backend.yml

@@ -34,18 +34,17 @@ Vagrant.configure("2") do |config|
 
         v.customize ["modifyvm", :id, "--memory", mem]
         v.customize ["modifyvm", :id, "--cpus", cpus]
-        v.customize ["modifyvm", :id, "--name", "devops.local"]
+        v.customize ["modifyvm", :id, "--name", "magento.local"]
         v.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]
         v.customize ["setextradata", :id, "VBoxInternal2/SharedFoldersEnableSymlinksCreate//vagrant","1"]
     end
 
-    #config.vm.box = "ubuntu/xenial64"
-    config.vm.box = "ubuntu/trusty64"
-    config.vm.network :private_network, ip: "192.168.33.7"
+    config.vm.box = "ubuntu/xenial64"
+    #config.vm.box = "ubuntu/trusty64"
+    config.vm.network :private_network, ip: "192.168.33.5"
     config.ssh.forward_agent = true
-    config.vm.hostname = "devops.local"
-    #config.vm.password = "qa123123"
-   #config.hostsupdater.aliases = ["b2b.xwiki.local" ,"b2c.xwiki.local", "bw.xwiki.local"]
+    config.vm.hostname = "magento.local"
+    #config.hostsupdater.aliases = ["b2b.xwiki.local" ,"b2c.xwiki.local", "bw.xwiki.local"]
     config.hostsupdater.remove_on_suspend = false
 
     # Synced folders
@@ -63,5 +62,5 @@ Vagrant.configure("2") do |config|
     else
         config.vm.synced_folder "./", "/vagrant", nfs: true
     end
-        config.vm.provision :shell, path: "ansible/windows.sh", args: ["devops.local"]
+        config.vm.provision :shell, path: "ansible/windows.sh", args: ["magento.local"]
 end

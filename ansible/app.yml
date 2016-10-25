@@ -2,29 +2,25 @@
 - hosts: frontend
   become: yes
   tasks:
-    - name: Set up permissions for {{ nginx_magento_server_doc_root }}/var
+    - name: Set up permissions for magento folders
       file:
-        path: "{{ nginx_magento_server_doc_root }}/var"
+        path: "{{ nginx_magento_server_doc_root }}/{{ item }}"
         mode: 0777
         state: directory
         recurse: yes
-    - name: Set up permissions for {{ nginx_magento_server_doc_root }}/media
-      file:
-        path: "{{ nginx_magento_server_doc_root }}/media"
-        mode: 0777
-        state: directory
-        recurse: yes
-    - name: Set up permissions for {{ nginx_magento_server_doc_root }}/app/etc
-      file:
-        path: "{{ nginx_magento_server_doc_root }}/app/etc"
-        mode: 0775
-        state: directory
-        recurse: yes
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
+      with_items:
+        - "var"
+        - "media"
+        - "app/etc"
     - name: Generate local.xml
       template:
         src: templates/local.j2
         dest: "/tmp/local.xml"
         mode: 0775
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
     - name: Move local.xml from /tmp into "{{ nginx_magento_server_doc_root }}/app/etc/"
       command: mv /tmp/local.xml {{ nginx_magento_server_doc_root }}/app/etc/local.xml
     - name: Enable Magento cron

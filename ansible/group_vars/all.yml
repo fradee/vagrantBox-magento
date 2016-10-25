@@ -10,8 +10,8 @@ magento_enable_cron: true
 #### nginx vhost magento Start
 nginx_magento_auth_basic: false
 nginx_magento_server_port: "80"
-nginx_magento_server_name_helper: "devops.local"
-nginx_magento_server_name: "devops.local"
+nginx_magento_server_name_helper: "magento.local"
+nginx_magento_server_name: "magento.local"
 nginx_magento_server_doc_root: "/vagrant/source"
 nginx_magento_server_php_fpm: "unix:/var/run/php{{ php_version }}-fpm.sock"
 nginx_magento_fastcgi_read_timeout: "9000"
@@ -31,7 +31,7 @@ magento_redis_compression_lib: "gzip" # "lzf" , "snappy"
 magento_save_session_in_redis: true
 magento_session_save: "<![CDATA[db]]>" # "<![CDATA[db]]>", "<![CDATA[memcache]]>" , "<![CDATA[files]]>"
 #magento_session_save_memcached: "<session_save_path><![CDATA[tcp://{{ memcached_listen_ip }}:{{ memcached_port }}?persistent=1&weight=2&timeout=10&retry_interval=10]]></session_save_path>"
-magento_crypt_key: "123123123456789"
+magento_crypt_key: "1f9cecc4bb92c068f6c36402f928de4e"
 #### magento local.xml End
 
 #### Xobb.percona Start
@@ -45,7 +45,7 @@ db_collation: utf8_general_ci
 db_user: magento
 db_user_password: magento
 db_host: "127.0.0.1"
-db_dump_file: "../extras/magentoschool.sql"
+db_dump_file: "../extras/vanilla_1930.sql"
 
 generate_custom_mycnf: false
 # Some defaults variables for percona server custom my.cnf config file
@@ -68,7 +68,7 @@ log_queries_not_using_indexes: 1
 magentotools_install_magerun: true  # Install Magento Magerun
 magentotools_install_modman: true   #Install Magento Modman
 magentotools_install_composer: true   #Install Composer
-magentotools_install_ioncube: true   #Install IonCube
+magentotools_install_ioncube: false   #Install IonCube
 magentotools_install_ioncube_php7: false # Set up ioncube for php5
 magentotools_install_ioncube_php5: true # Set up ioncube for php7
 magentotools_install_ioncube_php_version: "{{ php_version }}"
@@ -187,6 +187,7 @@ php_packages:
   - "php{{ php_version }}-mcrypt"
   - "php{{ php_version }}-mysql"
   - "php{{ php_version }}-redis"
+  - "php{{ php_version }}-soap"
   - "php-apcu"
 
 # Vendor-specific configuration paths on Debian/Ubuntu make my brain asplode.

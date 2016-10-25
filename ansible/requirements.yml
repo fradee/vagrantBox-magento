@@ -18,5 +18,5 @@
  - src: fradee.general
 # Install magentotols role from github
  - src: fradee.magentotools
-# Install Java for Linux from Ansible Galaxy
-# - src: geerlingguy.java
+# Install Mailcatcher from Ansible Galaxy
+ - src: fradee.mailcatcher
