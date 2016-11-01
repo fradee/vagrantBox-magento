@@ -36,13 +36,13 @@ then
     sudo ansible-galaxy install -r /vagrant/ansible/requirements.yml
 fi
 
-    # Setup Ansible for Local Use and Run
-    cp /vagrant/ansible/inventory/vagrant /etc/ansible/hosts -f
-    chmod 666 /etc/ansible/hosts
-    if [ "$VERSION_UBUNTU" == "16.04" ]
-        then
-        cat /etc/ssh/ssh_host_rsa_key.pub >> /home/ubuntu/.ssh/authorized_keys
-    else
-        cat /etc/ssh/ssh_host_rsa_key.pub >> /home/vagrant/.ssh/authorized_keys
-    fi
-    sudo ansible-playbook /vagrant/ansible/playbook_vagrant.yml -e hostname=$1 --connection=local #-vvv
+# Setup Ansible for Local Use and Run
+cp /vagrant/ansible/inventory/vagrant /etc/ansible/hosts -f
+chmod 666 /etc/ansible/hosts
+if [ "$VERSION_UBUNTU" == "16.04" ]
+    then
+    cat /etc/ssh/ssh_host_rsa_key.pub >> /home/ubuntu/.ssh/authorized_keys
+else
+    cat /etc/ssh/ssh_host_rsa_key.pub >> /home/vagrant/.ssh/authorized_keys
+fi
+sudo ansible-playbook /vagrant/ansible/playbook_vagrant.yml -e hostname=$1 --connection=local #-vvv
